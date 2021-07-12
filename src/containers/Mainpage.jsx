@@ -88,7 +88,7 @@ const MainPage = () => {
       p2 = deckDraw[1].value;
     }
     if (VALUES[p1] > VALUES[p2]) {
-      piles('mahmoud', deckDraw[0].code, deckDraw[1].code)
+      // piles('mahmoud', deckDraw[0].code, deckDraw[1].code)
 
       return <h1>Player 1 wins</h1>
     } else if (VALUES[p2] > VALUES[p1]) {
