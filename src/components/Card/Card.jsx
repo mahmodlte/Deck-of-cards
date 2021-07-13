@@ -3,7 +3,7 @@ const Card = ({ cardValues }) => {
   return (
     <div className="cardsContainer">
       {cardValues
-        ? cardValues.map((values) => {
+        ? cardValues.cards.map((values) => {
           return (
 
             <div key={values.code} className="card">

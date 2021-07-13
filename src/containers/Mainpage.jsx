@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import "../App.css";
 import Card from "../components/Card/Card";
+import { deckDraw, deckInit } from '../api/API'
 const VALUES = {
   "2": 2,
   "3": 3,
@@ -16,80 +17,69 @@ const VALUES = {
   "KING": 13,
   "ACE": 14,
 };
+
 const MainPage = () => {
-  const BASE_URL =
-    "https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1";
 
-  const [deckId, setDeckId] = useState();
-  const [deckDraw, setDeckDraw] = useState();
-  const [playerCards, setPlayerCards] = useState();
+
+  const [cardsDraw, setCardsDraw] = useState();
   const [cardsToggle, setCardsToggle] = useState(false)
-  const piles = (player, card1, card2) => {
-    fetch(`https://deckofcardsapi.com/api/deck/${deckId}/pile/${player}/add/?cards=${card1},${card2}`)
-      .then(res => res.json())
-      .then(piles => setPlayerCards(piles))
-      .catch(err => console.log(err))
 
 
-  }
-  console.log(playerCards)
+
   useEffect(() => {
-    const gameStart = async () => {
-      const res = await fetch(BASE_URL);
-      const data = await res.json();
-      setDeckId(data.deck_id);
-    };
-    gameStart();
+    deckInit()
   }, []);
   useEffect(() => {
-    const drawGame = async () => {
-      const res = await fetch(
-        `https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=2`
-      );
-      const deckData = await res.json();
-      setDeckDraw(deckData.cards);
-    };
 
     if (cardsToggle) {
-      drawGame()
+      deckDraw().then(deckData => setCardsDraw(deckData))
+      if (cardsDraw) {
+        if (cardsDraw.remaining == 2) {
+          deckInit()
+
+        }
+
+      }
+
       setInterval(() => {
         setCardsToggle(false)
       }, 100)
 
     }
   })
-  console.log(deckId)
 
-  console.log(cardsToggle)
 
   const winerOrLoser = () => {
     let p1, p2;
-    if (deckDraw) {
-      p1 = deckDraw[0].value;
-      p2 = deckDraw[1].value;
+    if (cardsDraw) {
+      p1 = cardsDraw.cards[0].value;
+      p2 = cardsDraw.cards[1].value;
     }
     if (VALUES[p1] > VALUES[p2]) {
-      piles('mahmoud', deckDraw[0].code, deckDraw[1].code)
 
-      return <h1>Player 1 wins</h1>
+
+      return <h3 className="result">Player 1 wins</h3>
+
     } else if (VALUES[p2] > VALUES[p1]) {
 
+      return <h3 className="result"> Player 2 wins</h3>
 
-      return <h1>Player 2 wins</h1>
-    } else {
-      return <h1>Draw</h1>
+    } else if (VALUES[p1] === VALUES[p2]) {
+      return <h3 className="result">Tie</h3>
     }
 
   };
-
+  // console.log(cardsDraw.remaining)
   return (
     <div className="container">
       <h1 className="heading">Deck of 52 cards</h1>
       <div className="main">
+
+        <h2 className="result">remaining:{cardsDraw ? cardsDraw.remaining : console.log("no remaining ")}</h2>
         <button className="button" onClick={() => setCardsToggle(!cardsToggle)}>
           Deal
         </button>
-        <Card cardValues={deckDraw} />
+        <Card cardValues={cardsDraw} />
         {winerOrLoser()}
 
       </div>
