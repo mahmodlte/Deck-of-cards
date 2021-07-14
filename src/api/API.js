@@ -14,3 +14,8 @@ export const deckDraw = (count = 2) => {
     (res) => res
   );
 };
+export const piles = (pileName, card1, card2) => {
+  return fetchData(
+    BASE_URL + `/${deckId}/pile/${pileName}/add/?cards=${card1},${card2}`
+  ).then((res) => res);
+};
