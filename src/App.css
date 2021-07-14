@@ -18,22 +18,26 @@
   align-items: center;
 }
 .heading {
-  color: white;
+  color: #000000;
   text-align: center;
 }
 .button {
-  background-color: #03045e;
+  background-color: #ffb703;
   color: white;
   outline: none;
-  padding: 15px;
-  border-radius: 15%;
+  border: none;
+  width: 150px;
+  padding: 12px;
+  margin-bottom: 5px;
+  border-radius: 5%;
 }
 .button:focus {
   outline: none;
 }
 
 .button:hover {
-  color: #00b4d8;
+  border: 1px solid;
+  color: #fb8500;
   background: white;
 }
 .cardsContainer {
@@ -53,7 +57,9 @@
   width: 14rem;
   height: auto;
   border-radius: 5%;
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  box-shadow: rgba(13, 27, 216, 0.4) 0px 5px, rgba(13, 27, 216, 0.4) 0px 10px,
+    rgba(13, 27, 216, 0.4) 0px 15px, rgba(216, 13, 30, 0.4) 0px 20px,
+    rgba(216, 13, 30, 0.4) 0px 20px;
 }
 .card img {
   animation-name: cardAnimation;
