@@ -12,13 +12,8 @@ export const deckInit = async () => {
     console.log(err);
   }
 };
+
 export const deckDraw = async (count = 2) => {
   const res = await fetchData(BASE_URL + `/${deckId}/draw/?count=${count}`);
-  return res;
-};
-export const piles = async (pileName, card1, card2) => {
-  const res = await fetchData(
-    BASE_URL + `/${deckId}/pile/${pileName}/add/?cards=${card1},${card2}`
-  );
   return res;
 };
