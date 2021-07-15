@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "../App.css";
 import Card from "../components/Card/Card";
-import { deckDraw, deckInit } from '../api/API'
+import { deckDraw, deckInit } from "../api/API";
 const VALUES = {
   "2": 2,
   "3": 3,
@@ -17,71 +17,114 @@ const VALUES = {
   "KING": 13,
   "ACE": 14,
 };
-
+const players = {
+  remaining: 52,
+  mahmoud: {
+    remaining: 0,
+  },
+  bot: {
+    remaining: 0,
+  },
+};
 const MainPage = () => {
-
-
   const [cardsDraw, setCardsDraw] = useState();
-  const [cardsToggle, setCardsToggle] = useState(false)
-
-
+  const [cardsToggle, setCardsToggle] = useState(false);
+  const [result, setResult] = useState(-1);
+  const [finalResult, setFinalResult] = useState(0);
+  const [disabled, setDisabled] = useState(false)
 
   useEffect(() => {
-    deckInit()
+    deckInit();
   }, []);
-  useEffect(() => {
 
+  useEffect(() => {
+    let abortContrller = new AbortController();
     if (cardsToggle) {
-      deckDraw().then(deckData => setCardsDraw(deckData))
+      deckDraw().then((deckData) => {
+        setCardsDraw((prevState) => {
+          prevState = deckData;
+          return prevState;
+        });
+        setResult(winerOrLoser(deckData));
+      });
       if (cardsDraw) {
-        if (cardsDraw.remaining == 2) {
-          deckInit()
+
+        if (cardsDraw.remaining === 0) {
+          setFinalResult(final());
+          setDisabled(true)
 
         }
-
       }
 
       setInterval(() => {
-        setCardsToggle(false)
-      }, 100)
-
+        setCardsToggle(false);
+      }, 100);
     }
-  })
+    return () => {
+      abortContrller.abort()
+    }
+  }, [cardsToggle, cardsDraw]);
 
-
-  const winerOrLoser = () => {
+  const winerOrLoser = (deckData) => {
     let p1, p2;
-    if (cardsDraw) {
-      p1 = cardsDraw.cards[0].value;
-      p2 = cardsDraw.cards[1].value;
+    if (deckData) {
+      p1 = deckData.cards[0].value;
+      p2 = deckData.cards[1].value;
     }
     if (VALUES[p1] > VALUES[p2]) {
+      players.mahmoud.remaining += 2;
 
-
-      return <h3 className="result">Player 1 wins</h3>
-
+      return 1;
     } else if (VALUES[p2] > VALUES[p1]) {
+      players.bot.remaining += 2;
 
-      return <h3 className="result"> Player 2 wins</h3>
-
+      return 2;
     } else if (VALUES[p1] === VALUES[p2]) {
-      return <h3 className="result">Tie</h3>
+      return 0;
     }
-
   };
-  // console.log(cardsDraw.remaining)
+  const final = () => {
+    if (players.mahmoud.remaining > players.bot.remaining) {
+      return 1;
+    } else if (players.bot.remaining > players.mahmoud.remaining) {
+      return 2;
+    }
+  };
+  console.log(cardsDraw.remaining)
   return (
     <div className="container">
       <h1 className="heading">Deck of 52 cards</h1>
       <div className="main">
-
-        <h2 className="result">remaining:{cardsDraw ? cardsDraw.remaining : console.log("no remaining ")}</h2>
-        <button className="button" onClick={() => setCardsToggle(!cardsToggle)}>
+        {/* This one counts the remaining races the one above by 2  */}
+        {cardsDraw ? (
+          <h2 className="result">remaining: {cardsDraw.remaining}</h2>
+        ) : (
+          console.log("no remaining ")
+        )}
+        <button className="button" disabled={disabled} onClick={() => setCardsToggle(!cardsToggle)}>
           Deal
         </button>
         <Card cardValues={cardsDraw} />
-        {winerOrLoser()}
 
+        {result === 0 ? (
+          <h3>Tie</h3>
+        ) : result === 1 ? (
+          <h3>Player 1 scored</h3>
+        ) : result === 2 ? (
+          <h3>Player 2 scored</h3>
+        ) : (
+          ""
+        )}
+
+        <p>Player 1 remaining {players.mahmoud.remaining}</p>
+        <p>Player 2 remaining {players.bot.remaining}</p>
+        {finalResult === 1 && cardsDraw.remaining !== 52 ? (
+          <p>Player 1 Wins the round</p>
+        ) : finalResult === 2 && cardsDraw.remaining !== 52 ? (
+          <p>Bot wins the round</p>
+        ) : (
+          ""
+        )}
       </div>
     </div>
   );

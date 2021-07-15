@@ -1,5 +1,4 @@
 const Card = ({ cardValues }) => {
-  // console.log(typeof cardValues.cards);
   return (
     <div className="cardsContainer">
       {cardValues
